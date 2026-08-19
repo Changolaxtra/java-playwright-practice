@@ -1,6 +1,6 @@
 ---
 name: hint
-description: Give starting-point hints for implementing a not-yet-implemented test case (UI or API) — which page objects/API clients to reuse or add, and a high-level approach — without writing the actual test code. Use when the user asks for a hint, pointer, or where to start on a test case, given a TCXX + UI/API identifier.
+description: Give starting-point hints for implementing a not-yet-implemented test case (UI or API) — which page objects/API clients to reuse or add, and a high-level approach — without writing the actual test code. Use when the user asks for a hint, pointer, or where to start on a test case, given a test case identifier (e.g. TC01 for UI, API07 for API).
 user-invocable: true
 allowed-tools:
   - Read
@@ -18,22 +18,23 @@ direction — it must never write the test class, page object methods, or API
 client methods for them. Do not use `Edit` or `Write` in this skill under any
 circumstances.
 
-Arguments passed: `$ARGUMENTS` — expected to contain a test case number
-(`TC01`, `tc1`, `01`, ...) and a suite identifier (`UI` or `API`), in any
-order/casing.
+Arguments passed: `$ARGUMENTS` — expected to contain a test case identifier:
+a `tc` prefix for UI (`TC01`, `tc1`, ...) or an `api` prefix for API (`API07`,
+`api7`, ...), case-insensitive.
 
 ## 1. Parse arguments
 
-Same parsing as `/check`: extract suite (`ui`/`api`) and zero-padded TC
-number. If either is missing/ambiguous, ask the user and stop.
+Same parsing as `/check`: prefix (`tc` → suite `ui`, `api` → suite `api`)
+determines the suite; zero-pad the number. If the prefix is missing/
+unparseable, ask the user and stop.
 
 ## 2. Locate the test case folder
 
 Base directory: `src/test/java/com/practice/<suite>/testcases/`, folder
-`tc<NN>_*`.
+`<prefix><NN>_*`.
 
 - No match → tell the user the TC number doesn't exist for that suite, list
-  available `tcNN_*` folders, stop.
+  available `<prefix>NN_*` folders, stop.
 
 ## 3. Check implementation status
 
@@ -57,7 +58,7 @@ result). Briefly restate the goal in your own words to confirm understanding
   test cases).
 - API: list `src/main/java/com/practice/api/clients/*.java` and
   `src/main/java/com/practice/api/model/*.java`; note the shared account
-  fixture from TC11 (`createAccount`) if this test case depends on a
+  fixture from API11 (`createAccount`) if this test case depends on a
   created/logged-in user.
 - Note the relevant base class (`BaseUiTest`/`BaseApiTest`) lifecycle already
   in place, so the hint doesn't suggest reinventing setup/teardown.

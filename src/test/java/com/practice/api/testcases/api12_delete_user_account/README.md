@@ -8,7 +8,7 @@
 Delete an existing user account via the API.
 
 ## Preconditions
-Requires an existing account (see ../tc11_create_user_account/README.md).
+Requires an existing account (see ../api11_create_user_account/README.md).
 
 ## Request Parameters
 `email`, `password`

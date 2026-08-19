@@ -8,7 +8,7 @@
 Update the details of an existing user account via the API.
 
 ## Preconditions
-Requires an existing account (see ../tc11_create_user_account/README.md).
+Requires an existing account (see ../api11_create_user_account/README.md).
 
 ## Request Parameters
 `name`, `email`, `password`, `title`, `birth_date`, `birth_month`, `birth_year`, `firstname`, `lastname`, `company`, `address1`, `address2`, `country`, `zipcode`, `state`, `city`, `mobile_number`
