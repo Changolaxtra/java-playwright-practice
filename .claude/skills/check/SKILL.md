@@ -1,6 +1,6 @@
 ---
 name: check
-description: Review an already-implemented test case (UI or API) against this project's Playwright/Java best practices and suggest improvements as text only — never edits the code. Use when the user asks to check, review, or critique a test case implementation, given a TCXX + UI/API identifier.
+description: Review an already-implemented test case (UI or API) against this project's Playwright/Java best practices and suggest improvements as text only — never edits the code. Use when the user asks to check, review, or critique a test case implementation, given a test case identifier (e.g. TC01 for UI, API07 for API).
 user-invocable: true
 allowed-tools:
   - Read
@@ -17,28 +17,30 @@ this skill is to help the project owner practice: report findings as text,
 never touch the code yourself. Do not use `Edit` or `Write` in this skill
 under any circumstances, even if the fix looks trivial.
 
-Arguments passed: `$ARGUMENTS` — expected to contain a test case number
-(`TC01`, `tc1`, `01`, ...) and a suite identifier (`UI` or `API`), in any
-order/casing.
+Arguments passed: `$ARGUMENTS` — expected to contain a test case identifier:
+a `tc` prefix for UI (`TC01`, `tc1`, ...) or an `api` prefix for API (`API07`,
+`api7`, ...), case-insensitive. A bare number (`01`) is ambiguous without a
+prefix.
 
 ## 1. Parse arguments
 
-- Extract the suite: `ui` or `api` (case-insensitive). If neither/both appear
-  ambiguously, ask the user to clarify and stop.
-- Extract the test case number and zero-pad to two digits (`1` → `01`,
-  `tc5` → `05`).
-- If either piece is missing or unparseable, ask the user for the missing
-  part and stop — don't guess.
+- Extract the prefix (`tc` → suite `ui`, `api` → suite `api`,
+  case-insensitive) and the test case number, zero-padded to two digits
+  (`1` → `01`, `tc5` → `05`, `api7` → `07`).
+- If the prefix is missing/unparseable (e.g. a bare number with no `tc`/`api`),
+  ask the user to clarify which suite they mean and stop — don't guess.
 
 ## 2. Locate the test case folder
 
 Base directory: `src/test/java/com/practice/<suite>/testcases/`
 
-Find the folder matching `tc<NN>_*` under that directory (there is exactly
-one per number, e.g. `tc01_register_user`, `tc07_verify_login_valid`).
+Find the folder matching `<prefix><NN>_*` under that directory (there is
+exactly one per number, e.g. `tc01_register_user` under `ui/testcases/`,
+`api07_verify_login_valid` under `api/testcases/`).
 
 - No match → tell the user this TC number doesn't exist for that suite, list
-  the available `tcNN_*` folders in that suite so they can pick, and stop.
+  the available `<prefix>NN_*` folders in that suite so they can pick, and
+  stop.
 - Multiple matches → this shouldn't happen; report it and stop.
 
 ## 3. Check implementation status
@@ -85,7 +87,7 @@ especially on:
   everything else (URLs, values, API responses).
 - **API-specific**: endpoint path constants don't start with `/`; assertions
   check the response body's `responseCode`/`message`, not just HTTP 200;
-  shared account fixture (TC11 `createAccount`) reused rather than
+  shared account fixture (API11 `createAccount`) reused rather than
   duplicated if this test depends on a logged-in/created user.
 - **Test isolation**: doesn't depend on other tests having run; sets up its
   own preconditions.

@@ -1,4 +1,4 @@
-package com.practice.api.testcases.tc00_options_request;
+package com.practice.api.testcases.api00_options_request;
 
 import com.microsoft.playwright.APIResponse;
 import com.practice.api.clients.ProductsApiClient;

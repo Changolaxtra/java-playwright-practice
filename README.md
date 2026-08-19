@@ -6,7 +6,7 @@ Test cases are documented one-by-one before being implemented, based on the site
 - UI: https://automationexercise.com/test_cases (26 cases)
 - API: https://automationexercise.com/api_list (14 cases)
 
-Plus two custom smoke tests (`tc00_...`) that sanity-check the framework itself against the real site.
+Plus two custom smoke tests (`tc00_...` for UI, `api00_...` for API) that sanity-check the framework itself against the real site.
 
 ## Prerequisites
 
@@ -49,7 +49,7 @@ mvn test -Dtest=VisitHomePageTest
 mvn test -Dtest=OptionsRequestTest
 ```
 
-Run a single test case by folder/package (useful once a `tcNN_...` folder has more than one test class):
+Run a single test case by folder/package (useful once a `tcNN_...`/`apiNN_...` folder has more than one test class):
 
 ```bash
 mvn test -Dtest="com.practice.ui.testcases.tc01_register_user.**"
@@ -84,13 +84,13 @@ src/test/java/com/practice/
   api/testcases/       One package per API test case from https://automationexercise.com/api_list
 ```
 
-Each `testcases/tcNN_.../` folder holds a `README.md` describing that test case (description, preconditions, steps, expected result) plus, once implemented, the corresponding `.java` test class living alongside it. Use `base/BaseUiTest` or `base/BaseApiTest` as the parent class, and add page objects / API clients under `src/main/java/com/practice` as needed.
+Each `testcases/tcNN_.../` (UI) or `testcases/apiNN_.../` (API) folder holds a `README.md` describing that test case (description, preconditions, steps, expected result) plus, once implemented, the corresponding `.java` test class living alongside it. Use `base/BaseUiTest` or `base/BaseApiTest` as the parent class, and add page objects / API clients under `src/main/java/com/practice` as needed.
 
 See `CLAUDE.md` for the coding conventions and testing practices this project follows.
 
 ## Project skills
 
-Two Claude Code skills (`.claude/skills/`) are set up to help while working through the test cases, each taking a Test Case ID as input (e.g. `tc01`, `01`, `register_user`, `api tc07`):
+Two Claude Code skills (`.claude/skills/`) are set up to help while working through the test cases, each taking a Test Case ID as input — `tc` prefix for UI, `api` prefix for API (e.g. `tc01`, `api07`):
 
 - `/hint <test-case-id>` — brief initial guidance on where to start (which base class/page object/API client to use, what to watch out for), without writing the test for you.
 - `/check <test-case-id>` — reviews an already-implemented test case against the `CLAUDE.md` conventions and suggests improvements; read-only, doesn't edit code.

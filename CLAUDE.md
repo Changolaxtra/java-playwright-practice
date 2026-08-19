@@ -36,18 +36,18 @@ src/main/java/com/practice/
 src/test/java/com/practice/
   base/               BaseUiTest / BaseApiTest (JUnit 5 lifecycle)
   ui/testcases/        tcNN_<slug>/README.md per UI test case (test_cases page)
-  api/testcases/       tcNN_<slug>/README.md per API test case (api_list page)
+  api/testcases/       apiNN_<slug>/README.md per API test case (api_list page)
 ```
 
 Keep this split: **main** holds reusable framework code (page objects, API clients, config), **test** holds only test classes and test-specific fixtures. This lets page objects/API clients be reused from multiple test classes without living in test scope.
 
 ## Test case workflow
 
-Each `testcases/tcNN_<slug>/` folder documents exactly one test case from the site (`README.md`: description, preconditions, steps, expected result, and a `- [ ] Not implemented` status line).
+Each `testcases/tcNN_<slug>/` (UI) or `testcases/apiNN_<slug>/` (API) folder documents exactly one test case from the site (`README.md`: description, preconditions, steps, expected result, and a `- [ ] Not implemented` status line).
 
 When implementing a test case:
 1. Read its `README.md` for the steps and expected result — don't re-derive them from the live site.
-2. Add the test class in the **same folder** as the README (e.g. `ui/testcases/tc01_register_user/RegisterUserTest.java`), extending `BaseUiTest` or `BaseApiTest`.
+2. Add the test class in the **same folder** as the README (e.g. `ui/testcases/tc01_register_user/RegisterUserTest.java`, `api/testcases/api11_create_user_account/CreateUserAccountTest.java`), extending `BaseUiTest` or `BaseApiTest`.
 3. Reuse or add page objects (`ui/pages`) / API clients (`api/clients`) under `src/main/java` rather than duplicating locators or endpoint calls across test cases — several UI test cases share flows (e.g. signup, add-to-cart, checkout) and several API test cases share the same account fixture (test case 11, Create User Account).
 4. Flip the README's status line to `- [x] Implemented` once the test class is done and passing.
 
@@ -81,10 +81,10 @@ Don't write the test class yourself unless explicitly asked — flag which page 
 - Don't rely on test execution order. Each test must set up its own preconditions (via API calls or UI actions), not depend on a previous test having run.
 
 **API testing**
-- `api.base.url` is `https://automationexercise.com/api/` (note the trailing slash) and endpoint path constants in API clients must NOT start with `/` (e.g. `"productsList"`, not `"/productsList"`). Playwright's `APIRequestContext` resolves URLs per the WHATWG URL spec: a path starting with `/` is treated as absolute from the domain root and silently drops the `/api` segment of the base URL, redirecting requests to the plain website instead of the API (confirmed while building the `tc00_options_request` smoke test — the resulting URL was `https://automationexercise.com/productsList`, which 302-redirected instead of hitting the API). Always check `response.url()` if a request behaves unexpectedly.
+- `api.base.url` is `https://automationexercise.com/api/` (note the trailing slash) and endpoint path constants in API clients must NOT start with `/` (e.g. `"productsList"`, not `"/productsList"`). Playwright's `APIRequestContext` resolves URLs per the WHATWG URL spec: a path starting with `/` is treated as absolute from the domain root and silently drops the `/api` segment of the base URL, redirecting requests to the plain website instead of the API (confirmed while building the `api00_options_request` smoke test — the resulting URL was `https://automationexercise.com/productsList`, which 302-redirected instead of hitting the API). Always check `response.url()` if a request behaves unexpectedly.
 - Add one client class per resource/endpoint group under `api/clients`, extending `BaseApiClient`. Expose intention-revealing methods (`createAccount(account)`, `verifyLogin(email, password)`) instead of leaking raw `post("createAccount", ...)` calls into tests.
 - Model request/response bodies as records under `api/model`. Deserialize with `BaseApiClient.parse(response, Type.class)` (Gson) rather than manual string parsing.
-- automationexercise.com's API always returns HTTP 200 and encodes the real result in the body's `responseCode`/`message` fields (see each `tcNN_.../README.md` under `api/testcases`) — assert on the body, not just the transport status code.
+- automationexercise.com's API always returns HTTP 200 and encodes the real result in the body's `responseCode`/`message` fields (see each `apiNN_.../README.md` under `api/testcases`) — assert on the body, not just the transport status code.
 - Several API test cases depend on the account created in API test case 11 (`createAccount`); reuse a shared setup instead of duplicating account-creation logic per test class.
 
 **Assertions**

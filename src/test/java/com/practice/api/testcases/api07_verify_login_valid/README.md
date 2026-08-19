@@ -8,7 +8,7 @@
 Verify login succeeds with valid, existing credentials.
 
 ## Preconditions
-Requires an existing account (see ../tc11_create_user_account/README.md) with a known email/password.
+Requires an existing account (see ../api11_create_user_account/README.md) with a known email/password.
 
 ## Request Parameters
 `email`, `password`
