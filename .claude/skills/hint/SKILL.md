@@ -22,6 +22,30 @@ Arguments passed: `$ARGUMENTS` — expected to contain a test case identifier:
 a `tc` prefix for UI (`TC01`, `tc1`, ...) or an `api` prefix for API (`API07`,
 `api7`, ...), case-insensitive.
 
+## 0. Detect the stack
+
+Don't ask which framework is in use and don't assume one — detect it from the
+repo you're running in, then apply that stack's best practices:
+
+- Look at `pom.xml` (and, if unclear, the imports in `BaseUiTest`/`BasePage`):
+  - `com.microsoft.playwright:playwright` → **Playwright**
+  - `org.seleniumhq.selenium:selenium-java` → **Selenium**
+  - Anything else → say the stack isn't recognised, fall back to `CLAUDE.md`
+    alone, and note the gap.
+- `CLAUDE.md` in the repo root is the source of truth for conventions; the
+  idioms below are what to look for in each stack.
+
+- **Playwright**: `Page`/`Locator` fields in page objects, user-facing locators
+  (`getByRole`/`getByLabel`/`getByText`/`getByTestId`), auto-waiting and web-first
+  assertions (`PlaywrightAssertions.assertThat(locator)`), `BrowserContext` per
+  test, `APIRequestContext` for API tests.
+- **Selenium**: `WebDriver` + `By` fields in page objects, stable locators
+  (`By.id`/`By.name`/`data-qa`/link text/short CSS; no long XPath), explicit waits
+  only (`WebDriverWait`/`ExpectedConditions` via `BasePage.wait`; no
+  `Thread.sleep`, no implicit waits), AssertJ after waiting inside the page object,
+  `WebDriver` per test, `ApiRequestContext`/`ApiResponse` (JDK `HttpClient`) for
+  API tests.
+
 ## 1. Parse arguments
 
 Same parsing as `/check`: prefix (`tc` → suite `ui`, `api` → suite `api`)
